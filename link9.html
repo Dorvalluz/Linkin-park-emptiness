@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LINKIN PARK - The Emptiness Machine</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: monospace;
+      background-color: black;
+      color: white;
+    }
+
+    #canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #text {
+      white-space: pre-wrap;
+      font-size: 16px;
+      text-align: left;
+      position: absolute;
+      top: 100vh;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .translation {
+      color: red;
+    }
+
+    .button-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 6px;
+      z-index: 3;
+    }
+
+    .button-container button {
+      padding: 4px 10px;
+      font-size: 13px;
+      border: none;
+      border-radius: 4px;
+      background-color: #222;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div id="canvas">
+  <div id="text"></div>
+</div>
+
+<div class="button-container">
+  <button id="playBtn">PLAY</button>
+  <button id="pauseBtn" disabled>PAUSE</button>
+</div>
+
+<audio id="audio" src="linkin2.mp3" preload="auto">
+  Seu navegador não suporta o elemento de áudio.
+</audio>
+
+<script>
+  const text = `
+
+Dm
+Your blades are sharpened
+Suas lâminas estão afiadas
+
+Gm
+With precision
+Com precisão
+
+Dm
+Flashing your favorite point of view
+Exibindo seu ponto de vista favorito
+
+C
+I know you’re waiting in the distance
+Eu sei que você está esperando à distância
+
+Gm
+Just like you always do
+Como você sempre faz
+
+Dm
+Just like you always do
+Como você sempre faz
+
+C
+Just like you always do
+Como você sempre faz
+
+
+---
+
+[Pré-Refrão]
+
+Bb
+Already pulling me in
+Já está me puxando
+
+F
+Already under my skin
+Já está sob minha pele
+
+C
+And I know exactly how this ends, I
+E eu sei exatamente como isso termina, eu
+
+
+---
+
+[Refrão]
+
+D
+Let you cut me open
+Deixo você me cortar
+
+Gm
+Just to watch me bleed
+Apenas para me ver sangrar
+
+Bb
+Gave up who I am
+Desisti de quem eu sou
+
+F C
+For who you wanted me to be
+Por quem você queria que eu fosse
+
+D
+Don’t know why I’m hoping
+Não sei por que ainda tenho esperança
+
+Gm
+For what I won't receive
+Por algo que eu não vou receber
+
+Bb
+Falling for the promise of
+Caindo pela promessa da
+
+F C
+The emptiness machine
+A máquina da solidão
+
+The emptiness machine
+A máquina da solidão
+
+
+---
+
+( D  Gm  Bb  F  C )
+
+
+---
+
+Dm
+Going around like a revolver
+Girando como um revólver
+
+Gm
+It’s been decided how we lose
+Já foi decidido como perdemos
+
+Dm
+'Cause there’s a fire under the altar
+Porque há um fogo debaixo do altar
+
+C
+I keep on lying to
+Continuo mentindo para
+
+Gm
+I keep on lying to
+Continuo mentindo para
+
+
+---
+
+[Pré-Refrão]
+
+Bb
+Already pulling me in
+Já está me puxando
+
+F
+Already under my skin
+Já está sob minha pele
+
+C
+And I know exactly how this ends, I
+E eu sei exatamente como isso termina, eu
+
+
+---
+
+[Refrão]
+
+D
+Let you cut me open
+Deixo você me cortar
+
+Gm
+Just to watch me bleed
+Apenas para me ver sangrar
+
+Bb
+Gave up who I am
+Desisti de quem eu sou
+
+F C
+For who you wanted me to be
+Por quem você queria que eu fosse
+
+D
+Don’t know why I’m hoping
+Não sei por que ainda tenho esperança
+
+Gm
+For what I won't receive
+Por algo que eu não vou receber
+
+Bb
+Falling for the promise of
+Caindo pela promessa da
+
+F C
+The emptiness machine
+A máquina da solidão
+
+The emptiness machine
+A máquina da solidão
+
+
+---
+
+[Ponte]
+
+
+Dm
+I only wanted to be part of something
+Eu só queria fazer parte de algo
+
+
+Gm
+I only wanted to be part of, part of
+Eu só queria fazer parte, parte disso
+
+
+Bb F C
+I only wanted to be part of something
+Eu só queria fazer parte de algo
+
+
+
+Dm
+I only wanted to be part of, part of
+Eu só queria fazer parte, parte disso
+
+
+
+Gm
+I only wanted to be part of something
+Eu só queria fazer parte de algo
+
+
+
+
+
+
+
+
+Bb F C
+I only wanted to be part
+Eu só queria fazer parte
+
+
+---
+
+[Refrão]
+
+D
+Let you cut me open
+Deixo você me cortar
+
+Gm
+Just to watch me bleed
+Apenas para me ver sangrar
+
+Bb
+Gave up who I am
+Desisti de quem eu sou
+
+F C
+For who you wanted me to be
+Por quem você queria que eu fosse
+
+D
+Don’t know why I’m hoping
+Não sei por que ainda tenho esperança
+
+Gm
+so f**** naive
+ingênua pra c****
+
+Bb
+Falling for the promise of
+Caindo pela promessa da
+
+F C
+The emptiness machine
+A máquina da solidão
+
+The emptiness machine
+A máquina da solidão
+
+
+---
+
+Dm
+I only wanted to be part of something
+Eu só queria fazer parte de algo
+
+(The emptiness machine)
+(A máquina da solidão)
+
+Bb F C
+I only wanted to be part of
+Eu só queria fazer parte
+
+Dm
+The emptiness machine
+A máquina da solidão
+
+
+---
+
+
+Elaborado por Dorval Luz
+`;
+
+  let yPos = window.innerHeight;
+  let scrolling = false;
+  const scrollSpeed = 0.53;
+
+  const textElement = document.getElementById('text');
+  const playBtn = document.getElementById('playBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const audio = document.getElementById('audio');
+
+  textElement.innerHTML = text;
+
+  function updateTextPosition() {
+    if (scrolling) {
+      yPos -= scrollSpeed;
+      textElement.style.top = `${yPos}px`;
+
+      if (yPos < -textElement.clientHeight) {
+        yPos = window.innerHeight;
+        scrolling = false;
+        playBtn.innerText = 'PLAY';
+        pauseBtn.disabled = true;
+        audio.pause();
+      } else {
+        requestAnimationFrame(updateTextPosition);
+      }
+    }
+  }
+
+  function toggleScrolling() {
+    if (scrolling) {
+      scrolling = false;
+      playBtn.innerText = 'PLAY';
+      pauseBtn.disabled = true;
+      audio.pause();
+    } else {
+      audio.currentTime = 0;
+      yPos = window.innerHeight;
+      scrolling = true;
+      playBtn.innerText = 'STOP';
+      pauseBtn.disabled = false;
+      audio.play();
+      updateTextPosition();
+    }
+  }
+
+  function pauseScrolling() {
+    if (scrolling) {
+      scrolling = false;
+      pauseBtn.innerText = 'RESUME';
+      audio.pause();
+    } else {
+      scrolling = true;
+      pauseBtn.innerText = 'PAUSE';
+      audio.play();
+      updateTextPosition();
+    }
+  }
+
+  playBtn.addEventListener('click', toggleScrolling);
+  pauseBtn.addEventListener('click', pauseScrolling);
+</script>
+
+</body>
+</html>

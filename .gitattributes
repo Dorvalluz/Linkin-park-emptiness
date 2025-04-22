@@ -1,2 +1,43 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# 🎤 Projeto Karaokê - Linkin Park: The Emptiness Machine
+
+Este é um projeto de karaokê interativo em HTML com rolagem automática sincronizada da música **"The Emptiness Machine"** da banda **Linkin Park**. A letra é exibida com **acordes** e **tradução em português** logo abaixo de cada verso, criando uma experiência imersiva e bilíngue.
+
+## 📽️ Demonstração
+
+Inclui:
+- Letra original + tradução em vermelho
+- Acordes para tocar junto
+- Botões de **play** e **pause**
+- Áudio sincronizado com a rolagem da letra
+
+> 💡 Ideal para estudar inglês, tocar violão e curtir música ao mesmo tempo.
+
+## 🚀 Tecnologias Utilizadas
+
+- HTML5
+- CSS3
+- JavaScript puro
+- Áudio em `<audio>`
+- Letra + tradução embutidas no script
+
+## ▶️ Como Executar
+
+1. Baixe os arquivos do projeto (HTML + áudio `linkin2.mp3`)
+2. Coloque tudo na mesma pasta
+3. Abra o arquivo `.html` no navegador
+
+> Obs: certifique-se de ter o arquivo `linkin2.mp3` na mesma pasta que o HTML, ou altere o caminho no código.
+
+## 📁 Estrutura
+
+
+## 👤 Autor
+
+**Dorval Luz**  
+Projeto pessoal de estudo e criatividade.  
+Contatos: [Seu WhatsApp ou e-mail, se quiser incluir]
+
+## 📄 Licença
+
+Este projeto é apenas para fins educacionais e não comerciais. A música pertence à banda **Linkin Park**.
+

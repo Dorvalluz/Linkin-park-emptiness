@@ -1,428 +1,274 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LINKIN PARK - The Emptiness Machine</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      font-family: monospace;
-      background-color: black;
-      color: white;
-    }
+    <meta charset="UTF-8">
+    <style>
+        body {
+            background-color: #000;
+            color: #c0c0c0;
+            font-family: sans-serif;
+            margin: 0;
+            padding-right: 100px; /* Espaço para os botões na direita (aumentado) */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-sizing: border-box;
+            position: relative;
+        }
 
-    #canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        h6 {
+            color: #c0c0c0;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
 
-    #text {
-      white-space: pre-wrap;
-      font-size: 16px;
-      text-align: left;
-      position: absolute;
-      top: 100vh;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      z-index: 2;
-      pointer-events: none;
-    }
+        #lyrics {
+            flex-grow: 1;
+            overflow-y: auto;
+            text-align: center;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            margin-right: 20px; /* Adiciona margem para evitar sobreposição em telas menores */
+        }
 
-    .translation {
-      color: red;
-    }
+        .line {
+            margin: 15px 0;
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
 
-    .button-container {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      padding: 6px;
-      z-index: 3;
-    }
+        .current-line {
+            color: #FFA500;
+            font-weight: bold;
+            font-size: 1.6em;
+        }
 
-    .button-container button {
-      padding: 4px 10px;
-      font-size: 13px;
-      border: none;
-      border-radius: 4px;
-      background-color: #222;
-      color: white;
-      cursor: pointer;
-    }
-  </style>
+        .translation {
+            color: #808080;
+            font-size: 1em;
+            margin-top: 5px;
+        }
+
+        #audio-container {
+            position: fixed;
+            top: 50%;
+            right: 20px; /* Aumenta o espaçamento da direita */
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Aumenta o espaçamento entre os botões */
+            z-index: 20;
+        }
+
+        button {
+            background: none;
+            color: #c0c0c0;
+            border: 2px solid #c0c0c0;
+            padding: 12px 20px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100px; /* Largura fixa dos botões */
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        button:hover {
+            background-color: #333;
+        }
+
+        button.play-button {
+            color: #FFA500;
+            border-color: #FFA500;
+        }
+
+        audio {
+            width: 80%;
+            max-width: 400px;
+            display: none;
+        }
+
+        #logo-footer {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding-right: 120px; /* Mais espaço para os botões em telas maiores */
+            }
+
+            h6 {
+                font-size: 2em;
+                margin-top: 30px;
+                margin-bottom: 20px;
+            }
+
+            #lyrics {
+                padding: 40px;
+                margin-right: 40px; /* Aumenta a margem em telas maiores */
+            }
+
+            .line {
+                font-size: 1.4em;
+                margin: 20px 0;
+            }
+
+            .current-line {
+                font-size: 1.8em;
+            }
+
+            .translation {
+                font-size: 1.1em;
+                margin-top: 10px;
+            }
+
+            #audio-container {
+                right: 30px; /* Aumenta o espaçamento da direita em telas maiores */
+                gap: 20px;
+            }
+
+            button {
+                padding: 15px 25px;
+                width: 120px;
+                font-size: 1.2em;
+                border-radius: 30px;
+            }
+        }
+/* Marca d'água um pouco mais visível */
+        .watermark {
+            position: fixed;
+            top: 5px;
+            left: 5px;
+            color: rgba(128, 128, 128, 0.3); /* Aumento sutil na opacidade */
+            font-size: 0.9em;
+            font-weight: bold;
+            z-index: 1;
+            pointer-events: none;
+
+    </style>
 </head>
 <body>
-
-<div id="canvas">
-  <div id="text"></div>
-</div>
-
-<div class="button-container">
-  <button id="playBtn">PLAY</button>
-  <button id="pauseBtn" disabled>PAUSE</button>
-</div>
-
-<audio id="audio" src="linkin2.mp3" preload="auto">
-  Seu navegador não suporta o elemento de áudio.
-</audio>
-
-<script>
-  const text = `
-
-Dm
-Your blades are sharpened
-Suas lâminas estão afiadas
-
-Gm
-With precision
-Com precisão
-
-Dm
-Flashing your favorite point of view
-Exibindo seu ponto de vista favorito
-
-C
-I know you’re waiting in the distance
-Eu sei que você está esperando à distância
-
-Gm
-Just like you always do
-Como você sempre faz
-
-Dm
-Just like you always do
-Como você sempre faz
-
-C
-Just like you always do
-Como você sempre faz
-
-
----
-
-[Pré-Refrão]
-
-Bb
-Already pulling me in
-Já está me puxando
-
-F
-Already under my skin
-Já está sob minha pele
-
-C
-And I know exactly how this ends, I
-E eu sei exatamente como isso termina, eu
-
-
----
-
-[Refrão]
-
-D
-Let you cut me open
-Deixo você me cortar
-
-Gm
-Just to watch me bleed
-Apenas para me ver sangrar
-
-Bb
-Gave up who I am
-Desisti de quem eu sou
-
-F C
-For who you wanted me to be
-Por quem você queria que eu fosse
-
-D
-Don’t know why I’m hoping
-Não sei por que ainda tenho esperança
-
-Gm
-For what I won't receive
-Por algo que eu não vou receber
-
-Bb
-Falling for the promise of
-Caindo pela promessa da
-
-F C
-The emptiness machine
-A máquina da solidão
-
-The emptiness machine
-A máquina da solidão
-
-
----
-
-( D  Gm  Bb  F  C )
-
-
----
-
-Dm
-Going around like a revolver
-Girando como um revólver
-
-Gm
-It’s been decided how we lose
-Já foi decidido como perdemos
-
-Dm
-'Cause there’s a fire under the altar
-Porque há um fogo debaixo do altar
-
-C
-I keep on lying to
-Continuo mentindo para
-
-Gm
-I keep on lying to
-Continuo mentindo para
-
-
----
-
-[Pré-Refrão]
-
-Bb
-Already pulling me in
-Já está me puxando
-
-F
-Already under my skin
-Já está sob minha pele
-
-C
-And I know exactly how this ends, I
-E eu sei exatamente como isso termina, eu
-
-
----
-
-[Refrão]
-
-D
-Let you cut me open
-Deixo você me cortar
-
-Gm
-Just to watch me bleed
-Apenas para me ver sangrar
-
-Bb
-Gave up who I am
-Desisti de quem eu sou
-
-F C
-For who you wanted me to be
-Por quem você queria que eu fosse
-
-D
-Don’t know why I’m hoping
-Não sei por que ainda tenho esperança
-
-Gm
-For what I won't receive
-Por algo que eu não vou receber
-
-Bb
-Falling for the promise of
-Caindo pela promessa da
-
-F C
-The emptiness machine
-A máquina da solidão
-
-The emptiness machine
-A máquina da solidão
-
-
----
-
-[Ponte]
-
-
-Dm
-I only wanted to be part of something
-Eu só queria fazer parte de algo
-
-
-Gm
-I only wanted to be part of, part of
-Eu só queria fazer parte, parte disso
-
-
-Bb F C
-I only wanted to be part of something
-Eu só queria fazer parte de algo
-
-
-
-Dm
-I only wanted to be part of, part of
-Eu só queria fazer parte, parte disso
-
-
-
-Gm
-I only wanted to be part of something
-Eu só queria fazer parte de algo
-
-
-
-
-
-
-
-
-Bb F C
-I only wanted to be part
-Eu só queria fazer parte
-
-
----
-
-[Refrão]
-
-D
-Let you cut me open
-Deixo você me cortar
-
-Gm
-Just to watch me bleed
-Apenas para me ver sangrar
-
-Bb
-Gave up who I am
-Desisti de quem eu sou
-
-F C
-For who you wanted me to be
-Por quem você queria que eu fosse
-
-D
-Don’t know why I’m hoping
-Não sei por que ainda tenho esperança
-
-Gm
-so f**** naive
-ingênua pra c****
-
-Bb
-Falling for the promise of
-Caindo pela promessa da
-
-F C
-The emptiness machine
-A máquina da solidão
-
-The emptiness machine
-A máquina da solidão
-
-
----
-
-Dm
-I only wanted to be part of something
-Eu só queria fazer parte de algo
-
-(The emptiness machine)
-(A máquina da solidão)
-
-Bb F C
-I only wanted to be part of
-Eu só queria fazer parte
-
-Dm
-The emptiness machine
-A máquina da solidão
-
-
----
-
-
-Elaborado por Dorval Luz
-`;
-
-  let yPos = window.innerHeight;
-  let scrolling = false;
-  const scrollSpeed = 0.53;
-
-  const textElement = document.getElementById('text');
-  const playBtn = document.getElementById('playBtn');
-  const pauseBtn = document.getElementById('pauseBtn');
-  const audio = document.getElementById('audio');
-
-  textElement.innerHTML = text;
-
-  function updateTextPosition() {
-    if (scrolling) {
-      yPos -= scrollSpeed;
-      textElement.style.top = `${yPos}px`;
-
-      if (yPos < -textElement.clientHeight) {
-        yPos = window.innerHeight;
-        scrolling = false;
-        playBtn.innerText = 'PLAY';
-        pauseBtn.disabled = true;
-        audio.pause();
-      } else {
-        requestAnimationFrame(updateTextPosition);
-      }
-    }
-  }
-
-  function toggleScrolling() {
-    if (scrolling) {
-      scrolling = false;
-      playBtn.innerText = 'PLAY';
-      pauseBtn.disabled = true;
-      audio.pause();
-    } else {
-      audio.currentTime = 0;
-      yPos = window.innerHeight;
-      scrolling = true;
-      playBtn.innerText = 'STOP';
-      pauseBtn.disabled = false;
-      audio.play();
-      updateTextPosition();
-    }
-  }
-
-  function pauseScrolling() {
-    if (scrolling) {
-      scrolling = false;
-      pauseBtn.innerText = 'RESUME';
-      audio.pause();
-    } else {
-      scrolling = true;
-      pauseBtn.innerText = 'PAUSE';
-      audio.play();
-      updateTextPosition();
-    }
-  }
-
-  playBtn.addEventListener('click', toggleScrolling);
-  pauseBtn.addEventListener('click', pauseScrolling);
-</script>
+    <h6>The Emptiness Machine - Linkin Park</h6>
+    <div id="lyrics"></div>
+
+    <div id="audio-container">
+        <button class="play-button" onclick="audio.play()">Play</button>
+        <button onclick="audio.pause()">Pausar</button>
+        <button onclick="audio.currentTime = 0; audio.pause()">Parar</button>
+    </div>
+
+    <audio id="audio" src="linkin2.mp3"></audio>
+<div class="watermark">DorvalLuz</div>
+    <img id="logo-footer" src="dorvalluz.jpeg" alt="Logotipo DorvalLuz" style="display: none;">
+
+    <script>
+        const audio = document.getElementById('audio');
+        const lyricsContainer = document.getElementById('lyrics');
+        const playButton = document.querySelector('.play-button');
+
+        const lrc = `
+[00:00.000]Your blades are sharpened|Suas lâminas estão afiadas
+[00:11.140]With precision|Com precisão
+[00:13.140]Flashing your favorite point of view|Exibindo seu ponto de vista favorito
+[00:16.520]I know you’re waiting in the distance|Eu sei que você está esperando à distância
+[00:21.320]Just like you always do|Como você sempre faz
+[00:24.120]Just like you always do|Como você sempre faz
+[00:26.120]Just like you always do|Como você sempre faz
+[00:26.920]Already pulling me in|Já está me puxando
+[00:28.720]Already under my skin|Já está sob minha pele
+[00:33.120]And I know exactly how this ends, I|E eu sei exatamente como isso termina, eu
+[00:34.520]Let you cut me open|Deixo você me cortar
+[00:36.920]Just to watch me bleed|Apenas para me ver sangrar
+[00:39.520]Gave up who I am|Desisti de quem eu sou
+[00:42.120]For who you wanted me to be|Por quem você queria que eu fosse
+[00:46.120]Don’t know why I’m hoping|Não sei por que ainda tenho esperança
+[00:48.720]For what I won't receive|Por algo que eu não vou receber
+[00:51.320]Falling for the promise of|Caindo pela promessa da
+[00:53.920]The emptiness machine|A máquina da solidão
+[00:56.520]The emptiness machine|A máquina da solidão
+[01:08.320]Going around like a revolver|Girando como um revólver
+[01:13.320]It’s been decided how we lose|Já foi decidido como perdemos
+[01:13.522]'Cause there’s a fire under the altar|Porque há um fogo debaixo do altar
+[01:24.320]I keep on lying to|Continuo mentindo para
+[01:26.920]I keep on lying to|Continuo mentindo para
+[01:29.320]Already pulling me in|Já está me puxando
+[01:32.320]Already under my skin|Já está sob minha pele
+[01:34.720]And I know exactly how this ends, I|E eu sei exatamente como isso termina, eu
+[01:37.520]Let you cut me open|Deixo você me cortar
+[01:38.323]Just to watch me bleed|Apenas para me ver sangrar
+[01:42.120]Gave up who I am|Desisti de quem eu sou
+[01:44.920]For who you wanted me to be|Por quem você queria que eu fosse
+[01:47.520]Don’t know why I’m hoping|Não sei por que ainda tenho esperança
+[01:51.320]For what I won't receive|Por algo que eu não vou receber
+[01:53.920]Falling for the promise of|Caindo pela promessa da
+[01:55.920]The emptiness machine|A máquina da solidão
+[01:57.120]The emptiness machine|A máquina da solidão
+[02:03.920]I only wanted to be part of something|Eu só queria fazer parte de algo
+[02:08.520]I only wanted to be part of, part of|Eu só queria fazer parte, parte disso
+[02:13.320]I only wanted to be part of something|Eu só queria fazer parte de algo
+[02:18.520]I only wanted to be part of, part of|Eu só queria fazer parte, parte disso
+[02:23.720]I only wanted to be part of something|Eu só queria fazer parte de algo
+[02:28.920]I only wanted to be part|Eu só queria fazer parte
+[02:33.120]Let you cut me open|Deixo você me cortar
+[02:35.720]Just to watch me bleed|Apenas para me ver sangrar
+[02:38.320]Gave up who I am|Desisti de quem eu sou
+[02:40.520]For who you wanted me to be|Por quem você queria que eu fosse
+[02:43.520]Don’t know why I’m hoping|Não sei por que ainda tenho esperança
+[02:46.120]fuc***naive|Não sei por que estou esperando, tão ingênuo pra c***"
+[02:48.520]Falling for the promise of|Caindo pela promessa da
+[02:51.320]The emptiness machine|A máquina da solidão
+[02:53.920]The emptiness machine|A máquina da solidão
+[02:55.920]I only wanted to be part of something|Eu só queria fazer parte de algo
+[03:00.120](The emptiness machine)|(A máquina da solidão)
+[03:01.720]I only wanted to be part of|Eu só queria fazer parte
+[03:03.920]The emptiness machine|A máquina da solidão
+[03:12.520]
+    `;
+
+        const lines = [];
+
+        lrc.trim().split('\n').forEach(line => {
+            const match = line.match(/\[(\d+):(\d+\.\d+)\](.+?)\|(.+)/);
+            if (match) {
+                const time = parseInt(match[1]) * 60 + parseFloat(match[2]);
+                const text = match[3].trim();
+                const translation = match[4].trim();
+                lines.push({ time, text, translation });
+            }
+        });
+
+        lines.forEach(line => {
+            const div = document.createElement('div');
+            div.className = 'line';
+            div.innerHTML = `<div class="original">${line.text}</div><div class="translation">${line.translation}</div>`;
+            lyricsContainer.appendChild(div);
+            line.element = div;
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            const currentTime = audio.currentTime;
+            let currentIndex = 0;
+
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].time <= currentTime) {
+                    currentIndex = i;
+                }
+            }
+
+            lines.forEach((line, i) => {
+                line.element.classList.remove('current-line');
+                if (i === currentIndex) {
+                    line.element.classList.add('current-line');
+                    line.element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>
